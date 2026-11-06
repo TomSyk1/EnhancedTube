@@ -1,0 +1,40 @@
+package com.tomsyk1.enhancedtube
+
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.schabi.newpipe.extractor.downloader.Downloader
+import org.schabi.newpipe.extractor.downloader.Request
+import org.schabi.newpipe.extractor.downloader.Response
+
+class AppDownloader(private val client: OkHttpClient) : Downloader() {
+
+    override fun execute(request: Request): Response {
+        val method = request.httpMethod()
+        val data = request.dataToSend()
+        val body = when {
+            data != null -> data.toRequestBody()
+            method == "POST" || method == "PUT" -> ByteArray(0).toRequestBody()
+            else -> null
+        }
+
+        val builder = okhttp3.Request.Builder()
+            .url(request.url())
+            .method(method, body)
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; rv:128.0) Gecko/20100101 Firefox/128.0")
+
+        request.headers().forEach { (name, values) ->
+            builder.removeHeader(name)
+            values.forEach { builder.addHeader(name, it) }
+        }
+
+        client.newCall(builder.build()).execute().use { r ->
+            return Response(
+                r.code,
+                r.message,
+                r.headers.toMultimap(),
+                r.body?.string(),
+                r.request.url.toString()
+            )
+        }
+    }
+}
