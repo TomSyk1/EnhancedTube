@@ -1,3 +1,5 @@
+<img width="500" height="500" alt="ic_launcher" src="https://github.com/user-attachments/assets/3772f17d-13bc-403c-bf52-1a68b422809b" />
+
 # EnhancedTube
 
 EnhancedTube is a lightweight, customizable, and ad-free YouTube client designed specifically for Android TV. It provides a clean leanback interface optimized for remote control navigation.
